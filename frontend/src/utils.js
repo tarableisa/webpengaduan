@@ -1,6 +1,4 @@
-// src/utils.js
-// src/utils.js
-export const BASE_URL = "http://localhost:3000/api";  // Arahkan ke '/api'
+export const BASE_URL = "http://localhost:3000/api";  
 
 export const getToken = () => localStorage.getItem("token");
 export const getUserRole = () => localStorage.getItem("role");
@@ -16,4 +14,4 @@ export const clearAuth = () => {
 };
 
 export const isAdmin = () => getUserRole() === "admin";
-export const isUser = () => getUserRole() === "User";
+export const isUser = () => getUserRole() === "user";

@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { Register, Login, refreshToken, logout } from "../controllers/UsersController.js";
-import { LoginAdmin, RegisterAdmin } from "../controllers/AdminController.js";
+import { LoginAdmin, LogoutAdmin, RegisterAdmin } from "../controllers/AdminController.js";
 import { createForm, getAllForms, updateFormStatus } from "../controllers/FormController.js";
 import { updateForm, deleteForm } from "../controllers/FormController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
@@ -27,6 +27,7 @@ router.delete("/logout", logout);
 // Admin routes
 router.post("/admin/login", LoginAdmin);
 router.post("/admin/create", RegisterAdmin);
+router.delete("/admin/logout", LogoutAdmin);
 
 // Form routes
 router.post("/form", verifyToken, upload.single("bukti"), createForm);

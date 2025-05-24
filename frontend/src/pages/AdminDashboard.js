@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const AdminDashboard = () => {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const fetchForms = async () => {
     try {
@@ -15,11 +17,10 @@ const AdminDashboard = () => {
       setForms(res.data);
       setLoading(false);
     } catch (err) {
-  console.error(err); // tambahkan ini
-  setError('Gagal mengambil data pengaduan.');
-  setLoading(false);
-}
-
+      console.error(err);
+      setError('Gagal mengambil data pengaduan.');
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -51,6 +52,18 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await api.delete('/admin/logout', { withCredentials: true },); 
+      localStorage.removeItem('token');
+      localStorage.removeItem("role");
+      navigate("/admin/login");
+    } catch (error) {
+      console.error('Gagal logout:', error);
+      alert('Gagal logout');
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -63,6 +76,12 @@ const AdminDashboard = () => {
             <li className="mb-3 cursor-pointer font-semibold">Lihat Semua Pengaduan</li>
           </ul>
         </nav>
+        <button
+          onClick={handleLogout}
+          className="mt-6 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+        >
+          Logout
+        </button>
       </aside>
 
       <main className="flex-1 p-6 bg-gray-100">
@@ -81,12 +100,14 @@ const AdminDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {forms.map(form => (
+            {forms.map((form) => (
               <tr key={form.id} className="text-center border-b">
                 <td className="py-2 px-4">{form.id}</td>
                 <td className="py-2 px-4">{form.namaPelapor || '-'}</td>
                 <td className="py-2 px-4">{form.lokasi}</td>
-                <td className="py-2 px-4">{new Date(form.waktuKejadian).toLocaleString()}</td>
+                <td className="py-2 px-4">
+                  {new Date(form.waktuKejadian).toLocaleString()}
+                </td>
                 <td className="py-2 px-4 max-w-xs truncate">{form.deskripsi}</td>
                 <td className="py-2 px-4">
                   <select

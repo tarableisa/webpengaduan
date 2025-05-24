@@ -1,4 +1,6 @@
+// UserDashboard.js
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const UserDashboard = () => {
@@ -9,6 +11,7 @@ const UserDashboard = () => {
   const [editDeskripsi, setEditDeskripsi] = useState('');
   const [editLokasi, setEditLokasi] = useState('');
   const [editWaktu, setEditWaktu] = useState('');
+  const navigate = useNavigate();
 
   const fetchUserForms = async () => {
     try {
@@ -19,11 +22,21 @@ const UserDashboard = () => {
       setForms(res.data);
       setLoading(false);
     } catch (err) {
-  console.error(err); // tambahkan ini
-  setError('Gagal mengambil data pengaduan.');
-  setLoading(false);
-}
+      console.error(err);
+      setError('Gagal mengambil data pengaduan.');
+      setLoading(false);
+    }
+  };
 
+  const handleLogout = async () => {
+    try {
+      await api.delete('/logout', { withCredentials: true });
+      localStorage.removeItem('token');
+      navigate('/login');
+    } catch (err) {
+      console.error('Gagal logout:', err);
+      alert('Gagal logout');
+    }
   };
 
   useEffect(() => {
@@ -34,7 +47,7 @@ const UserDashboard = () => {
     setEditId(form.id);
     setEditDeskripsi(form.deskripsi);
     setEditLokasi(form.lokasi);
-    setEditWaktu(form.waktuKejadian.slice(0,16)); // ambil format yyyy-MM-ddTHH:mm
+    setEditWaktu(form.waktuKejadian.slice(0, 16));
   };
 
   const cancelEdit = () => {
@@ -53,7 +66,10 @@ const UserDashboard = () => {
       formData.append('waktuKejadian', editWaktu);
 
       await api.put(`/form/${id}`, formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       cancelEdit();
@@ -73,6 +89,14 @@ const UserDashboard = () => {
         <nav>
           <ul>
             <li className="mb-3 font-semibold cursor-default">Pengaduan Saya</li>
+            <li>
+              <button
+                onClick={handleLogout}
+                className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Logout
+              </button>
+            </li>
           </ul>
         </nav>
       </aside>
@@ -92,7 +116,7 @@ const UserDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {forms.map(form => (
+            {forms.map((form) => (
               <tr key={form.id} className="text-center border-b">
                 <td className="py-2 px-4">{form.id}</td>
                 <td className="py-2 px-4">

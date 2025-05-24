@@ -6,6 +6,7 @@ import { setAuth } from '../utils';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user'); // ⬅️ default: user
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -14,17 +15,20 @@ const Login = () => {
     setError('');
 
     try {
-      // POST ke endpoint login utama
-      const response = await api.post('/login', { username, password });
-      const { accessToken, role } = response.data;
+      // Pilih endpoint sesuai role
+      const endpoint = role === 'admin' ? '/admin/login' : '/login';
 
-      // Simpan token dan role ke localStorage
-      setAuth(accessToken, role);
+      const response = await api.post(endpoint, { username, password });
+
+      const { accessToken, role: returnedRole } = response.data;
+
+      // Simpan token dan role
+      setAuth(accessToken, returnedRole || role); // fallback ke selected role jika role tidak dikembalikan dari backend
 
       // Redirect berdasarkan role
-      if (role === 'admin') {
+      if ((returnedRole || role) === 'admin') {
         navigate('/admin');
-      } else if (role === 'user') {
+      } else if ((returnedRole || role) === 'user') {
         navigate('/user');
       } else {
         navigate('/unauthorized');
@@ -52,11 +56,21 @@ const Login = () => {
         <label className="block mb-2 font-semibold">Password</label>
         <input
           type="password"
-          className="w-full p-2 mb-6 border rounded"
+          className="w-full p-2 mb-4 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        <label className="block mb-2 font-semibold">Login sebagai</label>
+        <select
+          className="w-full p-2 mb-6 border rounded"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
 
         <button
           type="submit"
