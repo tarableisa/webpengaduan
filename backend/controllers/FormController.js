@@ -1,19 +1,40 @@
 import Form from "../models/FormModel.js";
 import fs from "fs";
 import path from "path";
+import bucket from "../config/gcs.js";
 
 // Buat form laporan
 export const createForm = async (req, res) => {
   const { namaPelapor, lokasi, waktuKejadian, deskripsi } = req.body;
-  const bukti = req.file ? req.file.filename : null;
+  let buktiUrl = null;
 
   try {
+    if (req.file) {
+      const { originalname, buffer, mimetype } = req.file;
+      const gcsFileName = `${Date.now()}-${originalname}`;
+      const file = bucket.file(gcsFileName);
+
+      const stream = file.createWriteStream({
+        resumable: false,
+        contentType: mimetype,
+      });
+
+      await new Promise((resolve, reject) => {
+        stream.on("error", reject);
+        stream.on("finish", resolve);
+        stream.end(buffer);
+      });
+
+      // Buat URL akses publik (jika bucket kamu publik)
+      buktiUrl = `https://storage.googleapis.com/${bucket.name}/${gcsFileName}`;
+    }
+
     const form = await Form.create({
       namaPelapor,
       lokasi,
       waktuKejadian,
       deskripsi,
-      bukti,
+      bukti: buktiUrl,
       userId: req.userId,
     });
 
@@ -22,6 +43,7 @@ export const createForm = async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan", error: error.message });
   }
 };
+
 
 // Ambil semua form laporan
 export const getAllForms = async (req, res) => {
@@ -55,18 +77,37 @@ export const updateFormStatus = async (req, res) => {
 export const updateForm = async (req, res) => {
   const { id } = req.params;
   const { namaPelapor, lokasi, waktuKejadian, deskripsi } = req.body;
-  const bukti = req.file ? req.file.filename : null;
 
   try {
     const form = await Form.findByPk(id);
     if (!form) return res.status(404).json({ message: "Form tidak ditemukan" });
 
+    let buktiUrl = form.bukti;
+
+    if (req.file) {
+      const { originalname, buffer, mimetype } = req.file;
+      const gcsFileName = `${Date.now()}-${originalname}`;
+      const file = bucket.file(gcsFileName);
+
+      const stream = file.createWriteStream({
+        resumable: false,
+        contentType: mimetype,
+      });
+
+      await new Promise((resolve, reject) => {
+        stream.on("error", reject);
+        stream.on("finish", resolve);
+        stream.end(buffer);
+      });
+
+      buktiUrl = `https://storage.googleapis.com/${bucket.name}/${gcsFileName}`;
+    }
+
     form.namaPelapor = namaPelapor;
     form.lokasi = lokasi;
     form.waktuKejadian = waktuKejadian;
     form.deskripsi = deskripsi;
-
-    if (bukti) form.bukti = bukti;
+    form.bukti = buktiUrl;
 
     await form.save();
     res.status(200).json({ message: "Form berhasil diupdate", data: form });
@@ -74,6 +115,7 @@ export const updateForm = async (req, res) => {
     res.status(500).json({ message: "Gagal update form", error: error.message });
   }
 };
+
 
 // Hapus form
 // Hapus form berdasarkan ID, termasuk file gambar
@@ -84,22 +126,21 @@ export const deleteForm = async (req, res) => {
     const form = await Form.findByPk(id);
     if (!form) return res.status(404).json({ message: "Form tidak ditemukan" });
 
-    // Hapus file bukti jika ada
     if (form.bukti) {
-      const filePath = path.join("uploads", form.bukti);
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Gagal menghapus file:", err.message);
+      const fileName = form.bukti.split("/").pop(); // ambil nama file dari URL
+      const file = bucket.file(fileName);
+      await file.delete().catch(() => {
+        console.warn("Gagal hapus file dari GCS (mungkin sudah tidak ada)");
       });
     }
 
-    // Hapus form dari database
     await form.destroy();
-
     res.status(200).json({ message: "Form berhasil dihapus beserta file bukti" });
   } catch (error) {
     res.status(500).json({ message: "Gagal menghapus form", error: error.message });
   }
 };
+
 
 // Menampilkan Form sesuai userId
 export const getFormsByUser = async (req, res) => {

@@ -119,14 +119,13 @@ const AdminDashboard = () => {
                     <td className="py-2 px-4">{form.deskripsi}</td>
                     <td className="py-2 px-4">
                       {form.bukti ? (
-                        <a
-                          href={`http://localhost:3000/uploads/${form.bukti}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 hover:underline"
+                        <button
+                          onClick={() => window.open(form.bukti, '_blank')}
+                          className="text-red-600 hover:underline"
                         >
                           Lihat Bukti
-                        </a>
+                        </button>
+
                       ) : '-'}
                     </td>
                     <td className="py-2 px-4">
