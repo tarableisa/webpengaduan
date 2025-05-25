@@ -1,8 +1,16 @@
+// src/pages/UserDashboard.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import ReportForm from './ReportForm';
-import { FiPlusCircle, FiLogOut, FiEdit } from 'react-icons/fi';
+import {
+  FiPlusCircle,
+  FiLogOut,
+  FiEdit,
+  FiMenu,
+  FiX,
+  FiList,
+} from 'react-icons/fi';
 
 const UserDashboard = () => {
   const [forms, setForms] = useState([]);
@@ -11,7 +19,8 @@ const UserDashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [showList, setShowList] = useState(true);
   const [editId, setEditId] = useState(null);
-
+  // default sidebar tertutup
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchUserForms = async () => {
@@ -19,8 +28,7 @@ const UserDashboard = () => {
     try {
       const res = await api.get('/user/form', { withCredentials: true });
       setForms(res.data);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError('Gagal mengambil data pengaduan.');
     } finally {
       setLoading(false);
@@ -32,12 +40,8 @@ const UserDashboard = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await api.delete('/logout', { withCredentials: true });
-      navigate('/login');
-    } catch {
-      alert('Gagal logout');
-    }
+    await api.delete('/logout', { withCredentials: true });
+    navigate('/login');
   };
 
   const handleCreate = () => {
@@ -46,7 +50,7 @@ const UserDashboard = () => {
     setShowList(false);
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = id => {
     setEditId(id);
     setShowForm(true);
     setShowList(false);
@@ -64,44 +68,49 @@ const UserDashboard = () => {
     fetchUserForms();
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
-  if (error) return <p className="p-6 text-red-600">{error}</p>;
-
   return (
-    <div className="flex min-h-screen bg-red-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-red-200 p-6 relative">
-        <div className="absolute top-6 left-6 flex items-center space-x-2">
-          {/* Logo placeholder */}
-        </div>
+    <div className={`flex min-h-screen bg-red-50 transition-all duration-300 ${sidebarOpen ? 'pl-64' : 'pl-0'}`}>
+      {/* toggle button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed top-4 left-4 z-50 p-2 bg-red-600 text-white rounded shadow"
+      >
+        {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
 
-        <h2 className="mt-20 text-2xl font-bold text-red-700 mb-8">
-          User Dashboard
-        </h2>
+      {/* sidebar (selalu di-DOM, tapi di-translate keluar layar saat tertutup) */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-red-200 p-6
+          transform transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <h2 className="mt-10 text-2xl font-bold text-red-700 mb-6">User Dashboard</h2>
 
         <button
           onClick={handleCreate}
-          className="flex items-center justify-center w-full mb-4 bg-red-600 hover:bg-red-700 text-white py-2 rounded transition"
+          className="flex items-center w-full mb-4 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded"
         >
           <FiPlusCircle className="mr-2" /> Buat Pengaduan
         </button>
 
         <button
           onClick={handleShowList}
-          className="flex items-center justify-center w-full mb-4 bg-red-200 hover:bg-red-300 text-red-800 py-2 rounded transition"
+          className="flex items-center w-full mb-4 bg-red-200 hover:bg-red-300 text-red-800 py-2 px-3 rounded"
         >
-          📋 Daftar Pengaduan
+          <FiList className="mr-2" /> Daftar Pengaduan
         </button>
 
         <button
           onClick={handleLogout}
-          className="flex items-center justify-center w-full bg-gray-200 hover:bg-gray-300 text-red-700 py-2 rounded transition"
+          className="flex items-center w-full bg-gray-200 hover:bg-gray-300 text-red-700 py-2 px-3 rounded"
         >
           <FiLogOut className="mr-2" /> Logout
         </button>
       </aside>
 
-      {/* Main Content */}
+      {/* main content */}
       <main className="flex-1 p-8">
         {showForm ? (
           <div className="bg-white p-6 rounded-lg shadow">
@@ -112,25 +121,30 @@ const UserDashboard = () => {
           </div>
         ) : showList ? (
           <>
-            <h1 className="text-2xl font-bold text-red-700 mb-6">
-              Daftar Pengaduan Anda
-            </h1>
-
-            {forms.length === 0 ? (
+<h1 className="text-2xl font-bold text-red-700 mb-6 text-center">Daftar Pengaduan Anda</h1>            
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p className="text-red-600">{error}</p>
+            ) : forms.length === 0 ? (
               <p className="text-gray-600">Belum ada pengaduan.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white rounded-lg shadow">
                   <thead>
                     <tr className="bg-red-100 text-red-700">
-                      {['ID','Nama Pelapor','Lokasi','Waktu Kejadian','Deskripsi','Bukti','Status','Aksi']
-                        .map((h) => (
-                          <th key={h} className="py-3 px-4 text-left font-medium">{h}</th>
-                        ))}
+                      <th className="py-3 px-4 text-left">ID</th>
+                      <th className="py-3 px-4 text-left">Nama Pelapor</th>
+                      <th className="py-3 px-4 text-left">Lokasi</th>
+                      <th className="py-3 px-4 text-left">Waktu Kejadian</th>
+                      <th className="py-3 px-4 text-left">Deskripsi</th>
+                      <th className="py-3 px-4 text-left">Bukti</th>
+                      <th className="py-3 px-4 text-left">Status</th>
+                      <th className="py-3 px-4 text-left">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {forms.map((form) => (
+                    {forms.map(form => (
                       <tr key={form.id} className="border-t hover:bg-red-50">
                         <td className="py-2 px-4">{form.id}</td>
                         <td className="py-2 px-4">{form.namaPelapor || '-'}</td>
@@ -149,13 +163,15 @@ const UserDashboard = () => {
                             >
                               Lihat Bukti
                             </a>
-                          ) : '-'}
+                          ) : (
+                            '-'
+                          )}
                         </td>
                         <td className="py-2 px-4 capitalize">{form.status}</td>
                         <td className="py-2 px-4">
                           <button
                             onClick={() => handleEdit(form.id)}
-                            className="flex items-center bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded transition"
+                            className="flex items-center bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
                           >
                             <FiEdit className="mr-1" /> Edit
                           </button>
@@ -167,7 +183,9 @@ const UserDashboard = () => {
               </div>
             )}
           </>
-        ) : null}
+        ) : (
+          <p className="text-gray-600">Klik tombol menu untuk mulai.</p>
+        )}
       </main>
     </div>
   );
