@@ -1,19 +1,19 @@
-# Gunakan image ringan
+# Gunakan image Node.js ringan
 FROM node:20-alpine
 
-# Set direktori kerja
+# Set direktori kerja dalam container
 WORKDIR /app
 
-# Salin file dan install dependencies
+# Salin file package.json dan install dependencies
 COPY package*.json ./
 RUN npm install --production
 
-# Tambahkan ini:
-COPY .env .env
-
+# Salin semua source code (kecuali file yang diabaikan oleh .dockerignore)
 COPY . .
 
-# EXPOSE port sesuai yang digunakan app.listen
+# Jangan salin file .env ke dalam container!
+
+# Buka port 3000 (opsional, dokumentatif saja)
 EXPOSE 3000
 
 # Jalankan aplikasi

@@ -18,7 +18,7 @@ const app = express();
 const corsOptions = {
   origin: [
     "https://proyekahirfe27-173-dot-if-b-08.uc.r.appspot.com", // frontend deploy
-    "http://localhost:3000", // pengembangan lokal
+    "http://localhost:3001", // pengembangan lokal
   ],
   credentials: true, // untuk cookie/token
   methods: ["GET", "POST", "PUT", "DELETE"],
