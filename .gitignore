@@ -22,3 +22,5 @@ Thumbs.db
 # Backend sensitive files
 backend/.env
 backend/config/gcs-key.json
+
+/package-lock.json
