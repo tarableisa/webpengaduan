@@ -12,7 +12,7 @@ console.log("PORT dari env   :", process.env.PORT);
 console.log("DB_HOST dari env:", process.env.DB_HOST);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
 
 // === CORS Configuration ===
 const corsOptions = {
@@ -38,6 +38,8 @@ app.use("/uploads", express.static("uploads"));
 // Routing
 app.use("/api", router);
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 try {
   await db.authenticate();
@@ -46,5 +48,3 @@ try {
 } catch (error) {
   console.error("Database error:", error);
 }
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
