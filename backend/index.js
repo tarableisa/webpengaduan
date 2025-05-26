@@ -10,12 +10,14 @@ dotenv.config();
 // Debug: Pastikan .env terbaca
 console.log("PORT dari env   :", process.env.PORT);
 console.log("DB_HOST dari env:", process.env.DB_HOST);
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // === CORS Configuration ===
 const corsOptions = {
   origin: [
-    "https://proyekahirfe27-173-dot-if-b-08.uc.r.appspot.com/", // frontend deploy
+    "https://proyekahirfe27-173-dot-if-b-08.uc.r.appspot.com", // frontend deploy
     "http://localhost:3000", // pengembangan lokal
   ],
   credentials: true, // untuk cookie/token
@@ -36,6 +38,7 @@ app.use("/uploads", express.static("uploads"));
 // Routing
 app.use("/api", router);
 
+
 try {
   await db.authenticate();
   console.log("Database connected...");
@@ -44,5 +47,4 @@ try {
   console.error("Database error:", error);
 }
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
