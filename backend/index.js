@@ -7,6 +7,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 dotenv.config();
+// Debug: Pastikan .env terbaca
+console.log("PORT dari env   :", process.env.PORT);
+console.log("DB_HOST dari env:", process.env.DB_HOST);
 const app = express();
 
 // === CORS Configuration ===

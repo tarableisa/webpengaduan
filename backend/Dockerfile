@@ -8,6 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 
+# Tambahkan ini:
+COPY .env .env
+
 COPY . .
 
 # EXPOSE port sesuai yang digunakan app.listen
