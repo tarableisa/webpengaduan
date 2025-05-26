@@ -9,22 +9,38 @@ import { motion } from 'framer-motion';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
+  const [role, setRole] = useState('user'); // ⬅️ default: user
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     try {
+      // Pilih endpoint sesuai role
       const endpoint = role === 'admin' ? '/admin/login' : '/login';
-      const { data } = await api.post(endpoint, { username, password });
-      setAuth(data.accessToken, data.role || role);
-      navigate(data.role === 'admin' ? '/admin' : '/user');
+
+      const response = await api.post(endpoint, { username, password });
+
+      const { accessToken, role: returnedRole } = response.data;
+
+      // Simpan token dan role
+      setAuth(accessToken, returnedRole || role); // fallback ke selected role jika role tidak dikembalikan dari backend
+
+      // Redirect berdasarkan role
+      if ((returnedRole || role) === 'admin') {
+        navigate('/admin');
+      } else if ((returnedRole || role) === 'user') {
+        navigate('/user');
+      } else {
+        navigate('/unauthorized');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login gagal. Coba lagi.');
     }
   };
+
 
   return (
     <div className="min-h-screen bg-red-50 flex items-center justify-center px-4">
