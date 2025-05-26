@@ -1,14 +1,18 @@
 runtime: nodejs20
-service: proyekahirfe27-173  # ganti nama service kalau mau
+service: proyekahirfe27-173  # atau sesuaikan nama servicenya
 instance_class: F1
 
 handlers:
-  - url: /
+  - url: /(.*\.(js|css|png|jpg|svg|ico|json|map))
+    static_files: build/\1
+    upload: build/.*
+
+  - url: /favicon.ico
+    static_files: build/favicon.ico
+    upload: build/favicon.ico
+
+  - url: /.*
     static_files: build/index.html
     upload: build/index.html
-
-  - url: /(.*)
-    static_files: build/\1
-    upload: build/(.*)
 
 default_expiration: "1h"
