@@ -43,51 +43,51 @@ const Login = () => {
 
 
   return (
-    <div className="min-h-screen bg-red-50 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 via-white to-gray-200">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+        className="w-full max-w-md bg-white border border-gray-300 rounded-2xl shadow-lg p-8"
       >
-        <div className="bg-red-600 p-6">
-          <h1 className="text-center text-3xl font-bold text-white tracking-wide">
-            SISTEM PENGADUAN UTBK
-          </h1>
-        </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-red-100 text-red-700 p-3 rounded"
-            >
-              {error}
-            </motion.div>
-          )}
+        <h1 className="text-3xl font-bold text-center text-red-600 mb-6 tracking-wide uppercase">
+          Sistem Pengaduan UTBK
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && <div className="bg-red-100 text-red-700 p-3 rounded-md">{error}</div>}
 
-          <InputGroup
-            icon={<FiUser />}
-            label="Username"
-            type="text"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500">
+              <FiUser />
+            </span>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
 
-          <InputGroup
-            icon={<FiLock />}
-            label="Password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500">
+              <FiLock />
+            </span>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
 
           <div>
-            <label className="block mb-1 font-medium text-red-700">Login Sebagai</label>
+            <label className="text-sm text-gray-700 font-medium mb-1 block">Login Sebagai</label>
             <select
-              className="w-full border border-red-300 rounded-lg p-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
+              className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
               value={role}
-              onChange={e => setRole(e.target.value)}
+              onChange={(e) => setRole(e.target.value)}
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
@@ -98,34 +98,21 @@ const Login = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
+            className="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition"
           >
             Masuk
           </motion.button>
 
-          <p className="text-center text-sm text-red-600">
+          <p className="text-sm text-center text-gray-600">
             Belum punya akun?{' '}
-            <Link to="/register" className="underline font-semibold hover:text-red-800">
+            <Link to="/register" className="text-red-600 font-medium hover:underline">
               Daftar di sini
             </Link>
           </p>
         </form>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-const InputGroup = ({ icon, label, ...props }) => (
-  <div className="relative group">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-red-500 pointer-events-none group-focus-within:text-red-600">
-      {icon}
-    </div>
-    <input
-      {...props}
-      className="w-full pl-10 pr-3 py-2 border border-red-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-      placeholder={label}
-    />
-  </div>
-);
-
-export default Login;
+export default Login
