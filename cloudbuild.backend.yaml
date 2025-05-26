@@ -2,6 +2,7 @@ steps:
   # 1. Ambil secret .env dan gcs-key.json ke folder backend
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
+    dir: backend
     args:
       - -c
       - |
@@ -29,6 +30,7 @@ steps:
   # 3. Deploy ke Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: gcloud
+    dir: backend
     args:
       [
         "run",
