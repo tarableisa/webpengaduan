@@ -9,10 +9,21 @@ import cors from "cors";
 dotenv.config();
 const app = express();
 
-app.use(cors({ 
-  origin: 'http://localhost:3001',
-  credentials: true
- }));
+// === CORS Configuration ===
+const corsOptions = {
+  origin: [
+    "https://proyekahirfe27-173-dot-if-b-08.uc.r.appspot.com/", // frontend deploy
+    "http://localhost:3000", // pengembangan lokal
+  ],
+  credentials: true, // untuk cookie/token
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions)); // Gunakan opsi CORS
+app.options("*", cors(corsOptions)); // Tangani preflight request
+
+
 app.use(cookieParser());
 app.use(express.json());
 

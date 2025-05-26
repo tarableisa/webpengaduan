@@ -114,7 +114,7 @@ const ReportForm = ({ formId, onSuccess }) => {
       {formData.existingBukti && (
         <p className="mb-4">
           Bukti lama:{" "}
-          <a href={`http://localhost:3000/uploads/${formData.existingBukti}`}
+          <a href={`https://proyekakhirbe27-173-589948883802.us-central1.run.app/uploads/${formData.existingBukti}`}
              target="_blank" rel="noreferrer"
              className="text-blue-600 hover:underline">
             {formData.existingBukti}

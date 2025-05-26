@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:3000/api";  
+export const BASE_URL = "https://proyekakhirbe27-173-589948883802.us-central1.run.app/api";  
 
 export const getToken = () => localStorage.getItem("token");
 export const getUserRole = () => localStorage.getItem("role");
