@@ -1,18 +1,22 @@
 steps:
-  # 1. Ambil secret .env dan gcs-key.json
+  # 1. Ambil secret .env dan gcs-key.json ke folder backend
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     args:
       - -c
       - |
-        # Extract .env
-        gcloud secrets versions access latest \
-          --secret=backend-env > .env
+        # Buat folder backend kalau belum ada
+        mkdir -p backend
 
-        # Extract gcs-key.json
+        # Extract .env ke dalam folder backend
         gcloud secrets versions access latest \
-          --secret=backend-gcs-key > gcs-key.json
-          
+          --secret=backend-env > backend/.env
+
+        # Extract gcs-key.json ke dalam folder backend
+        gcloud secrets versions access latest \
+          --secret=backend-gcs-key > backend/gcs-key.json
+
+
   # 1. Build Docker image untuk backend
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/proyekAkhirbe27-173", "."]
