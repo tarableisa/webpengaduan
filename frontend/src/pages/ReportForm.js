@@ -111,16 +111,19 @@ const ReportForm = ({ formId, onSuccess }) => {
           className="w-full" />
       </label>
 
-      {formData.existingBukti && (
-        <p className="mb-4">
-          Bukti lama:{" "}
-          <a href={`https://proyekakhirbe27-173-589948883802.us-central1.run.app/uploads/${formData.existingBukti}`}
-             target="_blank" rel="noreferrer"
-             className="text-blue-600 hover:underline">
-            {formData.existingBukti}
-          </a>
-        </p>
-      )}
+{formData.existingBukti && (
+  <p className="mb-4">
+    Bukti lama:{" "}
+    <a
+      href={formData.existingBukti}
+      target="_blank"
+      rel="noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      Lihat Bukti Lama
+    </a>
+  </p>
+)}
 
       <button type="submit" disabled={loading}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
