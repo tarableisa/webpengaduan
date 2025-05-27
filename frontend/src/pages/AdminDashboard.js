@@ -68,90 +68,98 @@ const AdminDashboard = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-50 font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-red-700 text-white p-6 flex flex-col justify-between">
+      <aside className="w-64 bg-red-700 text-white flex flex-col justify-between py-6 px-4 shadow-lg">
         <div>
-          <h2 className="text-2xl font-bold mb-8">Admin Dashboard</h2>
+          <h2 className="text-3xl font-bold mb-10">Admin Dashboard</h2>
           <nav>
             <ul>
-              <li className="mb-3 cursor-pointer font-semibold hover:text-red-200">
+              <li className="mb-4 font-medium text-lg hover:text-red-200 transition cursor-pointer">
                 📋 Lihat Semua Pengaduan
               </li>
             </ul>
           </nav>
         </div>
-
         <button
           onClick={handleLogout}
-          className="w-full bg-white text-red-700 py-2 rounded font-semibold hover:bg-red-100 transition"
+          className="w-full mt-6 bg-white text-red-700 py-2 rounded-xl font-semibold hover:bg-red-100 transition shadow"
         >
           Logout
         </button>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
-        <h1 className="text-2xl font-bold text-red-700 mb-6">
-          Daftar Pengaduan User
-        </h1>
+      <main className="flex-1 p-10">
+        <h1 className="text-3xl font-bold text-red-700 mb-8 border-b pb-2">Daftar Pengaduan User</h1>
 
         {forms.length === 0 ? (
-          <p className="text-gray-600">Belum ada pengaduan.</p>
+          <p className="text-gray-600 text-lg">Belum ada pengaduan.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-lg shadow">
-              <thead>
-                <tr className="bg-red-100 text-red-700">
-                  {['ID','Nama Pelapor','Lokasi','Waktu Kejadian','Deskripsi','Bukti','Status','Aksi']
-                    .map((h) => (
-                      <th key={h} className="py-3 px-4 text-left font-medium">{h}</th>
-                    ))}
-                </tr>
-              </thead>
-              <tbody>
-                {forms.map((form) => (
-                  <tr key={form.id} className="border-t hover:bg-red-50">
-                    <td className="py-2 px-4">{form.id}</td>
-                    <td className="py-2 px-4">{form.namaPelapor || '-'}</td>
-                    <td className="py-2 px-4">{form.lokasi}</td>
-                    <td className="py-2 px-4">{new Date(form.waktuKejadian).toLocaleString()}</td>
-                    <td className="py-2 px-4">{form.deskripsi}</td>
-                    <td className="py-2 px-4">
-                      {form.bukti ? (
-                        <button
-                          onClick={() => window.open(form.bukti, '_blank')}
-                          className="text-red-600 hover:underline"
-                        >
-                          Lihat Bukti
-                        </button>
-
-                      ) : '-'}
-                    </td>
-                    <td className="py-2 px-4">
-                      <select
-                        className="border border-red-300 rounded px-2 py-1 text-red-700"
-                        value={form.status}
-                        onChange={(e) => updateStatus(form.id, e.target.value)}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="proses">Proses</option>
-                        <option value="selesai">Selesai</option>
-                      </select>
-                    </td>
-                    <td className="py-2 px-4">
-                      <button
-                        onClick={() => deleteForm(form.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition"
-                      >
-                        Hapus
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+<div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white">
+  <table className="min-w-full divide-y divide-gray-200 text-sm">
+    <thead className="bg-gray-100 text-gray-700">
+      <tr>
+        {['ID','Nama Pelapor','Lokasi','Waktu Kejadian','Deskripsi','Bukti','Status','Aksi'].map((h) => (
+          <th
+            key={h}
+            className="px-6 py-3 text-left font-semibold uppercase tracking-wide text-xs"
+          >
+            {h}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100 text-gray-700">
+      {forms.map((form) => (
+        <tr key={form.id} className="hover:bg-gray-50 transition-all duration-200">
+          <td className="px-6 py-4">{form.id}</td>
+          <td className="px-6 py-4 font-semibold text-gray-800">{form.namaPelapor || '-'}</td>
+          <td className="px-6 py-4">{form.lokasi}</td>
+          <td className="px-6 py-4">{new Date(form.waktuKejadian).toLocaleString()}</td>
+          <td className="px-6 py-4 max-w-xs truncate" title={form.deskripsi}>{form.deskripsi}</td>
+          <td className="px-6 py-4">
+            {form.bukti ? (
+              <button
+                onClick={() => window.open(form.bukti, '_blank')}
+                className="text-blue-600 hover:underline font-medium"
+              >
+                📎 Lihat Bukti
+              </button>
+            ) : (
+              <span className="text-gray-400">Tidak Ada</span>
+            )}
+          </td>
+          <td className="px-6 py-4">
+            <select
+              className={`px-3 py-1 rounded-md text-sm font-medium shadow-sm border focus:outline-none ${
+                form.status === 'selesai'
+                  ? 'bg-green-100 text-green-800'
+                  : form.status === 'proses'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-red-100 text-red-800'
+              }`}
+              value={form.status}
+              onChange={(e) => updateStatus(form.id, e.target.value)}
+            >
+              <option value="pending">⏳ Pending</option>
+              <option value="proses">🔄 Proses</option>
+              <option value="selesai">✅ Selesai</option>
+            </select>
+          </td>
+          <td className="px-6 py-4">
+            <button
+              onClick={() => deleteForm(form.id)}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md font-semibold shadow-sm"
+            >
+              🗑 Hapus
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
         )}
       </main>
     </div>

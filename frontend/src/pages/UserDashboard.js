@@ -69,16 +69,16 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className={`flex min-h-screen bg-red-50 transition-all duration-300 ${sidebarOpen ? 'pl-64' : 'pl-0'}`}>
-      {/* toggle button */}
+    <div className={`flex min-h-screen bg-red-50 transition-all duration-300 ${sidebarOpen ? 'pl-64' : ''}`}>
+      {/* Toggle Sidebar */}
       <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-50 p-2 bg-red-600 text-white rounded shadow"
+        onClick={() => setSidebarOpen(o => !o)}
+        className="fixed top-4 left-4 z-50 p-2 bg-red-600 text-white rounded shadow-lg"
       >
-        {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+        {sidebarOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
       </button>
 
-      {/* sidebar (selalu di-DOM, tapi di-translate keluar layar saat tertutup) */}
+      {/* Sidebar */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-red-200 p-6
@@ -86,104 +86,83 @@ const UserDashboard = () => {
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <h2 className="mt-10 text-2xl font-bold text-red-700 mb-6">User Dashboard</h2>
-
-        <button
-          onClick={handleCreate}
-          className="flex items-center w-full mb-4 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded"
-        >
-          <FiPlusCircle className="mr-2" /> Buat Pengaduan
+        <h2 className="mt-10 text-2xl font-bold text-red-700 mb-8">User Dashboard</h2>
+        <button onClick={handleCreate}
+          className="flex items-center w-full mb-4 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition">
+          <FiPlusCircle className="mr-2"/> Buat Pengaduan
         </button>
-
-        <button
-          onClick={handleShowList}
-          className="flex items-center w-full mb-4 bg-red-200 hover:bg-red-300 text-red-800 py-2 px-3 rounded"
-        >
-          <FiList className="mr-2" /> Daftar Pengaduan
+        <button onClick={handleShowList}
+          className="flex items-center w-full mb-8 bg-red-200 hover:bg-red-300 text-red-800 py-2 px-3 rounded transition">
+          <FiList className="mr-2"/> Daftar Pengaduan
         </button>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full bg-gray-200 hover:bg-gray-300 text-red-700 py-2 px-3 rounded"
-        >
-          <FiLogOut className="mr-2" /> Logout
+        <button onClick={handleLogout}
+          className="flex items-center w-full bg-gray-200 hover:bg-gray-300 text-red-700 py-2 px-3 rounded transition">
+          <FiLogOut className="mr-2"/> Logout
         </button>
       </aside>
 
-      {/* main content */}
+      {/* Main Content */}
       <main className="flex-1 p-8">
         {showForm ? (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h1 className="text-2xl font-bold text-red-700 mb-4">
+          <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+            <h1 className="text-2xl font-bold text-red-700 mb-6">
               {editId ? 'Edit Pengaduan' : 'Form Pengaduan Baru'}
             </h1>
-            <ReportForm formId={editId} onSuccess={handleFormSuccess} />
+            <ReportForm formId={editId} onSuccess={handleFormSuccess}/>
           </div>
         ) : showList ? (
           <>
-<h1 className="text-2xl font-bold text-red-700 mb-6 text-center">Daftar Pengaduan Anda</h1>            
+            <h1 className="text-3xl font-extrabold text-red-700 mb-8 text-center">
+              Daftar Pengaduan Anda
+            </h1>
             {loading ? (
-              <p>Loading...</p>
+              <p className="text-center text-gray-500">Loading…</p>
             ) : error ? (
-              <p className="text-red-600">{error}</p>
+              <p className="text-center text-red-600">{error}</p>
             ) : forms.length === 0 ? (
-              <p className="text-gray-600">Belum ada pengaduan.</p>
+              <p className="text-center text-gray-600">Belum ada pengaduan.</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white rounded-lg shadow">
-                  <thead>
-                    <tr className="bg-red-100 text-red-700">
-                      <th className="py-3 px-4 text-left">ID</th>
-                      <th className="py-3 px-4 text-left">Nama Pelapor</th>
-                      <th className="py-3 px-4 text-left">Lokasi</th>
-                      <th className="py-3 px-4 text-left">Waktu Kejadian</th>
-                      <th className="py-3 px-4 text-left">Deskripsi</th>
-                      <th className="py-3 px-4 text-left">Bukti</th>
-                      <th className="py-3 px-4 text-left">Status</th>
-                      <th className="py-3 px-4 text-left">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {forms.map(form => (
-                      <tr key={form.id} className="border-t hover:bg-red-50">
-                        <td className="py-2 px-4">{form.id}</td>
-                        <td className="py-2 px-4">{form.namaPelapor || '-'}</td>
-                        <td className="py-2 px-4">{form.lokasi}</td>
-                        <td className="py-2 px-4">
-                          {new Date(form.waktuKejadian).toLocaleString()}
-                        </td>
-                        <td className="py-2 px-4">{form.deskripsi}</td>
-                        <td className="py-2 px-4">
-                          {form.bukti ? (
-                            <button
-                              onClick={() => window.open(form.bukti, '_blank')}
-                              className="text-red-600 hover:underline"
-                            >
-                              Lihat Bukti
-                            </button>
-
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td className="py-2 px-4 capitalize">{form.status}</td>
-                        <td className="py-2 px-4">
-                          <button
-                            onClick={() => handleEdit(form.id)}
-                            className="flex items-center bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
-                          >
-                            <FiEdit className="mr-1" /> Edit
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {forms.map(form => (
+                  <div key={form.id}
+                       className="bg-white rounded-xl shadow hover:shadow-xl transition p-5 flex flex-col justify-between">
+                    <div>
+                      <div className="text-sm text-gray-400 mb-2">ID: {form.id}</div>
+                      {form.namaPelapor && <h2 className="text-xl font-semibold text-red-700 mb-1">{form.namaPelapor}</h2>}
+                      <p className="text-gray-600 mb-2"><strong>Lokasi:</strong> {form.lokasi}</p>
+                      <p className="text-gray-600 mb-2">
+                        <strong>Waktu:</strong>{' '}
+                        {new Date(form.waktuKejadian).toLocaleString()}
+                      </p>
+                      <p className="text-gray-700 mb-3 whitespace-pre-line">{form.deskripsi}</p>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between">
+                      <a href={form.bukti} target="_blank" rel="noreferrer"
+                         className="text-red-600 hover:underline text-sm">
+                        Lihat Bukti
+                      </a>
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full capitalize
+                          ${form.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          form.status === 'proses'  ? 'bg-blue-100 text-blue-700' :
+                          'bg-green-100 text-green-700'}`}>
+                        {form.status}
+                      </span>
+                      <button
+                        onClick={() => handleEdit(form.id)}
+                        className="p-1 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                        title="Edit"
+                      >
+                        <FiEdit size={16}/>
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </>
         ) : (
-          <p className="text-gray-600">Klik tombol menu untuk mulai.</p>
+          <p className="text-center text-gray-600 mt-20">Klik tombol “Daftar Pengaduan” di sidebar untuk mulai.</p>
         )}
       </main>
     </div>
